@@ -3,10 +3,9 @@ import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
 import { useAccountStore } from "@/stores/account";
-import { displayBalance } from "../utils";
+import { displayBalance } from "@/utils";
 import { useToast } from "@/components/ui/use-toast.ts";
 import { Button } from "@/components/ui/button.tsx";
-import { GnoWSProvider } from "@gnolang/gno-js-client";
 
 const WalletButton: FC = () => {
 	const { toast } = useToast();
@@ -14,11 +13,6 @@ const WalletButton: FC = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
-
-	const fetchBalance = async () => {
-		const accountInfo = await AdenaService.getAccountInfo();
-		setAccountInfo(accountInfo);
-	};
 
 	const ugnots = useMemo<number>(() => {
 		if (!accountInfo) return 0;
@@ -30,30 +24,22 @@ const WalletButton: FC = () => {
 
 		try {
 			// Attempt to establish a connection
-			await AdenaService.establishConnection("meme.land");
-
-			// Get the account info
-			const info: IAccountInfo = await AdenaService.getAccountInfo();
+			await AdenaService.establishConnection("gnovox");
 
 			// Make sure the network is valid
 			await AdenaService.switchNetwork(constants.chainID);
 
+			// Get the account info
+			const accountInfo: IAccountInfo = await AdenaService.getAccountInfo();
+
 			// Update the account context
-			setAddress(info.address);
+			setAddress(accountInfo.address);
+			setAccountInfo(accountInfo);
 			setChainID(constants.chainID);
-
-			await fetchBalance();
-
-			const p = new GnoWSProvider(constants.chainRPC);
-			console.log(p);
-			// const a = await p.getFileContent(constants.realmPath);
-			// console.log(a);
-			const response = await p.evaluateExpression(constants.realmPath, "GetBlogs()");
-			console.log(response);
 
 			toast({
 				title: "Connected to Adena",
-				description: `Connected to ${info.address}`,
+				description: `Connected to ${accountInfo.address}`,
 			});
 		} catch (e) {
 			console.error(e);
@@ -69,7 +55,7 @@ const WalletButton: FC = () => {
 	};
 	return (
 		<>
-			<Button onClick={handleWalletConnect} disabled={isLoading}>
+			<Button onClick={handleWalletConnect} disabled={accountInfo !== null || isLoading}>
 				{accountInfo === null ? "Connect wallet" : displayBalance(ugnots)}
 			</Button>
 		</>
