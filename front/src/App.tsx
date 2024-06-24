@@ -7,7 +7,8 @@ import { z } from "zod";
 
 const blogsSchema = z.array(
 	z.object({
-		name: z.string(),
+		slug: z.string(),
+		title: z.string(),
 	}),
 );
 type Blogs = z.infer<typeof blogsSchema>;
@@ -31,7 +32,7 @@ function App() {
 		<>
 			<ConnectWalletButton />
 			{blogs.map((blog) => (
-				<p key={blog.name}>{blog.name}</p>
+				<p key={blog.slug}>{blog.title}</p>
 			))}
 			<Toaster />
 		</>
