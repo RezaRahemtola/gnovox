@@ -7,26 +7,29 @@ import (
 	"gno.land/p/demo/avl"
 )
 
-type Blog struct {
-	Title             string
+type User struct {
+	Address           std.Address
+	Username		  string
 	Posts             avl.Tree // slug -> *Post
 }
 
 type Post struct {
+	Slug		 string
 	Title        string
 	Body         string
 	CreatedAt    time.Time
 	Publisher    std.Address
 }
 
-func NewBlog(title string) Blog {
-	return Blog{
-		Title: title,
+func NewUser(address std.Address) User {
+	return User{
+		Address:  address,
+		Username: address.String(),
 	}
 }
 
-func (b *Blog) NewPost(publisher std.Address, slug, title, body, pubDate string) error {
-	if _, found := b.Posts.Get(slug); found {
+func (u *User) NewPost(publisher std.Address, slug, title, body, pubDate string) error {
+	if _, found := u.Posts.Get(slug); found {
 		return ErrPostSlugExists
 	}
 
@@ -53,12 +56,13 @@ func (b *Blog) NewPost(publisher std.Address, slug, title, body, pubDate string)
 	}
 
 	post := &Post{
+		Slug:      slug,
 		Title:     title,
 		Body:      body,
 		CreatedAt: parsedTime,
 		Publisher: publisher,
 	}
 
-	b.Posts.Set(slug, post)
+	u.Posts.Set(slug, post)
 	return nil
 }

@@ -1,23 +1,25 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { AdenaService } from "../services/adena/adena";
 import { IAccountInfo } from "../services/adena/adena.types";
 import { constants } from "../constants";
 import { useAccountStore } from "@/stores/account";
-import { displayBalance } from "@/utils";
 import { useToast } from "@/components/ui/use-toast.ts";
 import { Button } from "@/components/ui/button.tsx";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
 
 const WalletButton: FC = () => {
 	const { toast } = useToast();
-	const { setChainID, setAddress } = useAccountStore();
+	const { setAddress, setChainID } = useAccountStore();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
-
-	const ugnots = useMemo<number>(() => {
-		if (!accountInfo) return 0;
-		return +accountInfo.coins.split("u")[0];
-	}, [accountInfo]);
 
 	const handleWalletConnect = async () => {
 		setIsLoading(true);
@@ -53,11 +55,42 @@ const WalletButton: FC = () => {
 
 		setIsLoading(false);
 	};
+
+	const onLogout = () => {
+		setAddress(null);
+		setAccountInfo(null);
+		setChainID(null);
+	};
+
 	return (
 		<>
-			<Button onClick={handleWalletConnect} disabled={accountInfo !== null || isLoading}>
-				{accountInfo === null ? "Connect wallet" : displayBalance(ugnots)}
-			</Button>
+			{accountInfo === null ? (
+				<Button onClick={handleWalletConnect} disabled={isLoading}>
+					Connect wallet
+				</Button>
+			) : (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" size="icon" className="overflow-hidden rounded-full">
+							<img
+								src="/assets/user.png"
+								width={36}
+								height={36}
+								alt="Avatar"
+								className="overflow-hidden rounded-full"
+							/>
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuLabel>My Account</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem disabled>Settings</DropdownMenuItem>
+						<DropdownMenuItem disabled>Support</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)}
 		</>
 	);
 };

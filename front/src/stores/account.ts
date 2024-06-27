@@ -1,23 +1,20 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
-const useAccountStore = create<{
+type AccountState = {
 	address: string | null;
 	chainID: string | null;
-	setAddress: (address: string) => void;
-	setChainID: (chainID: string) => void;
-}>()(
-	persist(
-		(set) => ({
-			address: null,
-			chainID: null,
-			setAddress: (address: string) => set({ address }),
-			setChainID: (chainID: string) => set({ chainID }),
-		}),
-		{
-			name: "account-storage",
-		},
-	),
-);
+};
+
+type AccountActions = {
+	setAddress: (address: string | null) => void;
+	setChainID: (chainID: string | null) => void;
+};
+
+const useAccountStore = create<AccountState & AccountActions>((set) => ({
+	address: null,
+	chainID: null,
+	setAddress: (address) => set(() => ({ address })),
+	setChainID: (address) => set(() => ({ address })),
+}));
 
 export { useAccountStore };
