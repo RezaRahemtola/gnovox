@@ -14,7 +14,7 @@ const useAccountStore = create<AccountState & AccountActions>((set) => ({
 	address: null,
 	chainID: null,
 	setAddress: (address) => set(() => ({ address })),
-	setChainID: (address) => set(() => ({ address })),
+	setChainID: (chainID) => set(() => ({ chainID })),
 }));
 
 export { useAccountStore };

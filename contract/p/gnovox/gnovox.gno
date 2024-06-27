@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gno.land/p/demo/avl"
+	"gno.land/p/demo/json"
 )
 
 type User struct {
@@ -21,11 +22,19 @@ type Post struct {
 	Publisher    std.Address
 }
 
-func NewUser(address std.Address) User {
+func NewUser(address std.Address, username string) User {
 	return User{
 		Address:  address,
-		Username: address.String(),
+		Username: username,
 	}
+}
+
+func (u *User) Json() *json.Node {
+	node := json.ObjectNode("", map[string]*json.Node{
+		"address": json.StringNode("address", u.Address.String()),
+		"username": json.StringNode("username", u.Username),
+	})
+	return node
 }
 
 func (u *User) NewPost(publisher std.Address, slug, title, body, pubDate string) error {

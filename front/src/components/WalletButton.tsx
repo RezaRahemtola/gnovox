@@ -13,8 +13,14 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
+import { useProviderStore } from "@/stores/provider.ts";
+import { parseGnoEvaluateJsonResponse } from "@/utils";
+import { useNavigate } from "@tanstack/react-router";
 
 const WalletButton: FC = () => {
+	const { provider } = useProviderStore();
+	const navigate = useNavigate();
+
 	const { toast } = useToast();
 	const { setAddress, setChainID } = useAccountStore();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,6 +44,16 @@ const WalletButton: FC = () => {
 			setAddress(accountInfo.address);
 			setAccountInfo(accountInfo);
 			setChainID(constants.chainID);
+
+			try {
+				const response = await provider.evaluateExpression(
+					constants.realmPath,
+					`GetUserByAddress("${accountInfo.address}")`,
+				);
+				parseGnoEvaluateJsonResponse(response);
+			} catch (error) {
+				await navigate({ to: "/signup" });
+			}
 
 			toast({
 				title: "Connected to Adena",

@@ -12,20 +12,31 @@ var (
 	users      avl.Tree // address -> *User
 )
 
-func AddUser() error {
+func AddUser(username string) error {
 	caller := std.GetOrigCaller()
 
 	if _, found := users.Get(caller.String()); found {
+		// TODO: also check username
 		return ErrUserExist
 	}
 
-	u := gnovox.NewUser(caller)
+	u := gnovox.NewUser(caller, username)
 	users.Set(caller.String(), &u)
 	return nil
 }
 
-func GetUser(username string) gnovox.User {
+func GetUserByAddress(address std.Address) string {
+	if value, found := users.Get(address.String()); found {
+		u := value.(*gnovox.User)
+		jsonResponse := u.Json()
 
+		b, err := json.Marshal(jsonResponse)
+		checkErr(err)
+
+		return string(b)
+	}
+	panic(ErrUserNotFound)
+	return ""
 }
 
 func GetUsers() string {
@@ -33,11 +44,8 @@ func GetUsers() string {
 
 	users.ReverseIterate("", "", func(address string, value interface{}) bool {
 		u := value.(*gnovox.User)
-		node := json.ObjectNode("", map[string]*json.Node{
-			"address": json.StringNode("address", address),
-			"username": json.StringNode("username", u.Username),
-		})
-		jsonResponse.AppendArray(node)
+		jsonNode := u.Json()
+		jsonResponse.AppendArray(jsonNode)
 		return false
 	})
 
