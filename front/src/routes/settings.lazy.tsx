@@ -28,7 +28,6 @@ const Settings = () => {
 	});
 
 	const onSubmit = async (values: ProfileFormSchema) => {
-		// TODO: check that username changed to avoid useless transactions
 		await AdenaService.sendTransaction(
 			[
 				{
@@ -83,7 +82,9 @@ const Settings = () => {
 								</Form>
 							</CardContent>
 							<CardFooter className="border-t px-6 py-4">
-								<Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
+								<Button disabled={!form.formState.isDirty} onClick={form.handleSubmit(onSubmit)}>
+									Save
+								</Button>
 							</CardFooter>
 						</Card>
 					</div>

@@ -17,6 +17,7 @@ import { useProviderStore } from "@/stores/provider.ts";
 import { parseGnoEvaluateJsonResponse } from "@/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { LogOut, Settings } from "lucide-react";
 
 const userSchema = z.object({
 	address: z.string(),
@@ -109,10 +110,15 @@ const WalletButton: FC = () => {
 						<DropdownMenuLabel>My Account</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>
-							<Link to="/settings">Settings</Link>
+							<Link to="/settings" className="flex gap-1">
+								<Settings />
+								<span className="my-auto">Settings</span>
+							</Link>
 						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
+						<DropdownMenuItem onClick={onLogout} className="cursor-pointer gap-1">
+							<LogOut />
+							<span className="my-auto">Logout</span>
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			)}
