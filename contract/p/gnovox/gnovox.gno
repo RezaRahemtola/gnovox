@@ -29,6 +29,13 @@ func NewUser(address std.Address, username string) User {
 	}
 }
 
+func UpdateUser(u User, username string) User {
+	if username != "" {
+		u.Username = username
+	}
+	return u
+}
+
 func (u *User) Json() *json.Node {
 	node := json.ObjectNode("", map[string]*json.Node{
 		"address": json.StringNode("address", u.Address.String()),

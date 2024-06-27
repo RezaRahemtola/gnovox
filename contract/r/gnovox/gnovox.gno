@@ -25,6 +25,20 @@ func AddUser(username string) error {
 	return nil
 }
 
+func UpdateUser(username string) error {
+	caller := std.GetOrigCaller()
+
+	// TODO: check that username isn't already taken
+	value, found := users.Get(caller.String());
+	if found == false {
+		return ErrUserNotFound
+	}
+	currentUser := value.(*gnovox.User)
+	u := gnovox.UpdateUser(*currentUser, username)
+	users.Set(caller.String(), &u)
+	return nil
+}
+
 func GetUserByAddress(address std.Address) string {
 	if value, found := users.Get(address.String()); found {
 		u := value.(*gnovox.User)

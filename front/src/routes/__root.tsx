@@ -16,7 +16,7 @@ const RootLayout = () => {
 						<p className="cursor-pointer font-semibold">gnovox</p>
 					</Link>
 				</div>
-				<div className="flex items-center">
+				<div className="flex items-center gap-4">
 					<Button variant="ghost" className="gap-2" disabled={address === null}>
 						<SquarePen />
 						Write

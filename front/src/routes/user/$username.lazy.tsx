@@ -4,6 +4,6 @@ const UserPage = () => {
 	return <div>Hello /user/$userId!</div>;
 };
 
-export const Route = createLazyFileRoute("/user/$userId")({
+export const Route = createLazyFileRoute("/user/$username")({
 	component: UserPage,
 });

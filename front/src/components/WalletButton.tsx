@@ -15,14 +15,20 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { useProviderStore } from "@/stores/provider.ts";
 import { parseGnoEvaluateJsonResponse } from "@/utils";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
+
+const userSchema = z.object({
+	address: z.string(),
+	username: z.string(),
+});
 
 const WalletButton: FC = () => {
 	const { provider } = useProviderStore();
 	const navigate = useNavigate();
 
 	const { toast } = useToast();
-	const { setAddress, setChainID } = useAccountStore();
+	const { setAddress, setUsername, setChainID } = useAccountStore();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
@@ -50,7 +56,9 @@ const WalletButton: FC = () => {
 					constants.realmPath,
 					`GetUserByAddress("${accountInfo.address}")`,
 				);
-				parseGnoEvaluateJsonResponse(response);
+				const jsonResponse = parseGnoEvaluateJsonResponse(response);
+				const parsedResponse = userSchema.parse(jsonResponse);
+				setUsername(parsedResponse.username);
 			} catch (error) {
 				await navigate({ to: "/signup" });
 			}
@@ -100,8 +108,9 @@ const WalletButton: FC = () => {
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>My Account</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem disabled>Settings</DropdownMenuItem>
-						<DropdownMenuItem disabled>Support</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Link to="/settings">Settings</Link>
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
 					</DropdownMenuContent>
