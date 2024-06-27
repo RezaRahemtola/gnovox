@@ -4,6 +4,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TooltipProvider: FC<any> = TooltipPrimitive.Provider;
 
 const Tooltip = TooltipPrimitive.Root;
