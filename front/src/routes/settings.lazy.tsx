@@ -18,16 +18,18 @@ const profileFormSchema = z.object({
 type ProfileFormSchema = z.infer<typeof profileFormSchema>;
 
 const Settings = () => {
-	const { address, username, setUsername } = useAccountStore();
+	const { address, user, setUser } = useAccountStore();
 
 	const form = useForm<ProfileFormSchema>({
 		resolver: zodResolver(profileFormSchema),
 		defaultValues: {
-			username: username ?? undefined,
+			username: user?.username ?? undefined,
 		},
 	});
 
 	const onSubmit = async (values: ProfileFormSchema) => {
+		if (user === null) return;
+
 		await AdenaService.sendTransaction(
 			[
 				{
@@ -43,7 +45,7 @@ const Settings = () => {
 			],
 			5000000,
 		);
-		setUsername(values.username);
+		setUser({ ...user, username: values.username });
 	};
 
 	return (
@@ -57,7 +59,7 @@ const Settings = () => {
 						<span className="font-semibold text-primary">General</span>
 					</nav>
 					<div className="grid gap-6">
-						<Card x-chunk="dashboard-04-chunk-1">
+						<Card>
 							<CardHeader>
 								<CardTitle>Profile</CardTitle>
 								<CardDescription>Update your information</CardDescription>

@@ -16,12 +16,18 @@ import { Route as rootRoute } from "./routes/__root";
 
 // Create Virtual Routes
 
+const WriteLazyImport = createFileRoute("/write")();
 const SignupLazyImport = createFileRoute("/signup")();
 const SettingsLazyImport = createFileRoute("/settings")();
 const IndexLazyImport = createFileRoute("/")();
 const UserUsernameLazyImport = createFileRoute("/user/$username")();
 
 // Create/Update Routes
+
+const WriteLazyRoute = WriteLazyImport.update({
+	path: "/write",
+	getParentRoute: () => rootRoute,
+} as any).lazy(() => import("./routes/write.lazy").then((d) => d.Route));
 
 const SignupLazyRoute = SignupLazyImport.update({
 	path: "/signup",
@@ -68,6 +74,13 @@ declare module "@tanstack/react-router" {
 			preLoaderRoute: typeof SignupLazyImport;
 			parentRoute: typeof rootRoute;
 		};
+		"/write": {
+			id: "/write";
+			path: "/write";
+			fullPath: "/write";
+			preLoaderRoute: typeof WriteLazyImport;
+			parentRoute: typeof rootRoute;
+		};
 		"/user/$username": {
 			id: "/user/$username";
 			path: "/user/$username";
@@ -84,6 +97,7 @@ export const routeTree = rootRoute.addChildren({
 	IndexLazyRoute,
 	SettingsLazyRoute,
 	SignupLazyRoute,
+	WriteLazyRoute,
 	UserUsernameLazyRoute,
 });
 
@@ -98,6 +112,7 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/settings",
         "/signup",
+        "/write",
         "/user/$username"
       ]
     },
@@ -109,6 +124,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/signup": {
       "filePath": "signup.lazy.tsx"
+    },
+    "/write": {
+      "filePath": "write.lazy.tsx"
     },
     "/user/$username": {
       "filePath": "user/$username.lazy.tsx"

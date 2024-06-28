@@ -17,10 +17,12 @@ const RootLayout = () => {
 					</Link>
 				</div>
 				<div className="flex items-center gap-4">
-					<Button variant="ghost" className="gap-2" disabled={address === null}>
-						<SquarePen />
-						Write
-					</Button>
+					<Link to="/write">
+						<Button variant="ghost" className="gap-2" disabled={address === null}>
+							<SquarePen />
+							Write
+						</Button>
+					</Link>
 
 					<WalletButton />
 				</div>

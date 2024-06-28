@@ -37,9 +37,27 @@ func UpdateUser(u User, username string) User {
 }
 
 func (u *User) Json() *json.Node {
+	posts := json.ArrayNode("posts", []*json.Node{})
+	u.Posts.Iterate("", "", func(address string, value interface{}) bool {
+		p := value.(*Post)
+		jsonNode := p.Json()
+		posts.AppendArray(jsonNode)
+		return false
+	})
+
 	node := json.ObjectNode("", map[string]*json.Node{
 		"address": json.StringNode("address", u.Address.String()),
 		"username": json.StringNode("username", u.Username),
+		"posts": posts,
+	})
+	return node
+}
+
+func (p *Post) Json() *json.Node {
+	node := json.ObjectNode("", map[string]*json.Node{
+		"slug": json.StringNode("slug", p.Slug),
+		"title": json.StringNode("title", p.Title),
+		"body": json.StringNode("body", p.Body),
 	})
 	return node
 }

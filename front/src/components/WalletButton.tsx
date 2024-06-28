@@ -9,30 +9,22 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
 import { useProviderStore } from "@/stores/provider.ts";
 import { parseGnoEvaluateJsonResponse } from "@/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { z } from "zod";
-import { LogOut, Settings } from "lucide-react";
-
-const userSchema = z.object({
-	address: z.string(),
-	username: z.string(),
-});
+import { LogOut, Settings, User } from "lucide-react";
+import { userSchema } from "@/types/user.ts";
 
 const WalletButton: FC = () => {
 	const { provider } = useProviderStore();
 	const navigate = useNavigate();
 
 	const { toast } = useToast();
-	const { setAddress, setUsername, setChainID } = useAccountStore();
+	const { address, setAddress, setUser } = useAccountStore();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-
-	const [accountInfo, setAccountInfo] = useState<IAccountInfo | null>(null);
 
 	const handleWalletConnect = async () => {
 		setIsLoading(true);
@@ -49,8 +41,6 @@ const WalletButton: FC = () => {
 
 			// Update the account context
 			setAddress(accountInfo.address);
-			setAccountInfo(accountInfo);
-			setChainID(constants.chainID);
 
 			try {
 				const response = await provider.evaluateExpression(
@@ -59,7 +49,7 @@ const WalletButton: FC = () => {
 				);
 				const jsonResponse = parseGnoEvaluateJsonResponse(response);
 				const parsedResponse = userSchema.parse(jsonResponse);
-				setUsername(parsedResponse.username);
+				setUser(parsedResponse);
 			} catch (error) {
 				await navigate({ to: "/signup" });
 			}
@@ -83,13 +73,12 @@ const WalletButton: FC = () => {
 
 	const onLogout = () => {
 		setAddress(null);
-		setAccountInfo(null);
-		setChainID(null);
+		setUser(null);
 	};
 
 	return (
 		<>
-			{accountInfo === null ? (
+			{address === null ? (
 				<Button onClick={handleWalletConnect} disabled={isLoading}>
 					Connect wallet
 				</Button>
@@ -107,14 +96,20 @@ const WalletButton: FC = () => {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>My Account</DropdownMenuLabel>
-						<DropdownMenuSeparator />
+						<DropdownMenuItem>
+							{/*TODO: Use username here*/}
+							<Link to={`/user/${address}`} className="flex gap-1">
+								<User />
+								<span className="my-auto">Profile</span>
+							</Link>
+						</DropdownMenuItem>
 						<DropdownMenuItem>
 							<Link to="/settings" className="flex gap-1">
 								<Settings />
 								<span className="my-auto">Settings</span>
 							</Link>
 						</DropdownMenuItem>
+						<DropdownMenuSeparator />
 						<DropdownMenuItem onClick={onLogout} className="cursor-pointer gap-1">
 							<LogOut />
 							<span className="my-auto">Logout</span>

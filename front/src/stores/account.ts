@@ -1,24 +1,23 @@
 import { create } from "zustand";
+import { User } from "@/types/user.ts";
+
+type AccountUser = Omit<User, "address">;
 
 type AccountState = {
 	address: string | null;
-	username: string | null;
-	chainID: string | null;
+	user: AccountUser | null;
 };
 
 type AccountActions = {
 	setAddress: (address: string | null) => void;
-	setUsername: (username: string | null) => void;
-	setChainID: (chainID: string | null) => void;
+	setUser: (user: AccountUser | null) => void;
 };
 
 const useAccountStore = create<AccountState & AccountActions>((set) => ({
 	address: null,
-	username: null,
-	chainID: null,
+	user: null,
 	setAddress: (address) => set(() => ({ address })),
-	setUsername: (username) => set(() => ({ username })),
-	setChainID: (chainID) => set(() => ({ chainID })),
+	setUser: (user) => set(() => ({ user })),
 }));
 
 export { useAccountStore };
