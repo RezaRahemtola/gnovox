@@ -6,6 +6,8 @@ import { parseGnoEvaluateJsonResponse } from "@/utils";
 import { useProviderStore } from "@/stores/provider.ts";
 import { useToast } from "@/components/ui/use-toast.ts";
 import { User, userSchema } from "@/types/user.ts";
+import { UserCard } from "@/components/UserCard.tsx";
+import { PostCard } from "@/components/PostCard.tsx";
 
 const UserPage = () => {
 	const { provider } = useProviderStore();
@@ -29,18 +31,16 @@ const UserPage = () => {
 				});
 			}
 		})();
+		// 	eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	if (pageUser !== null) {
 		return (
 			<>
-				<p>Address: {pageUser.address}</p>
-				<p>Username: {pageUser.username}</p>
+				<UserCard user={pageUser} className="mx-auto" />
+				<h2 className="mt-5 text-3xl font-bold">Posts</h2>
 				{pageUser.posts.map((post) => (
-					<div key={post.slug}>
-						<p>{post.title}</p>
-						<p>{post.slug}</p>
-					</div>
+					<PostCard author={pageUser.address} post={post} key={post.slug} />
 				))}
 			</>
 		);

@@ -5,3 +5,5 @@ export const postSchema = z.object({
 	title: z.string(),
 	body: z.string(),
 });
+
+export type Post = z.infer<typeof postSchema>;
