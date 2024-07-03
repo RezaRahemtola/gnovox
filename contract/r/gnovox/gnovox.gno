@@ -64,6 +64,27 @@ func NewPost(slug, title, body string) {
 	checkErr(err)
 }
 
+func GetPost(userAddress std.Address, slug string) string {
+	uValue, uFound := users.Get(userAddress.String());
+
+	if uFound == false {
+		panic(ErrUserNotFound)
+	}
+	u := uValue.(*gnovox.User)
+
+	pValue, pFound := u.Posts.Get(slug)
+	if pFound == false {
+		panic(ErrPostNotFound)
+	}
+	p := pValue.(*gnovox.Post)
+
+	jsonResponse := p.Json()
+	b, err := json.Marshal(jsonResponse)
+	checkErr(err)
+
+	return string(b)
+}
+
 func GetUsers() string {
 	jsonResponse := json.ArrayNode("", []*json.Node{})
 
